@@ -6,25 +6,58 @@ import { notFound } from 'next/navigation';
 export async function generateStaticParams() {
   const exerciseIds = new Set<string>();
   
+  // Add defensive checks to prevent runtime errors
+  if (!Array.isArray(workoutPlans)) {
+    return [];
+  }
+  
   workoutPlans.forEach(plan => {
+    // Check if plan has days array
+    if (!plan || !Array.isArray(plan.days)) {
+      return;
+    }
+    
     plan.days.forEach(day => {
-      // Add warmup exercises
-      day.warmup.forEach(exercise => {
-        const id = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-        exerciseIds.add(id);
-      });
+      // Check if day object exists
+      if (!day) {
+        return;
+      }
       
-      // Add main workout exercises
-      day.mainWorkout.forEach(exercise => {
-        const id = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-        exerciseIds.add(id);
-      });
+      // Add warmup exercises with defensive checks
+      if (Array.isArray(day.warmup)) {
+        day.warmup.forEach(exercise => {
+          if (exercise && typeof exercise.name === 'string') {
+            const id = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (id) {
+              exerciseIds.add(id);
+            }
+          }
+        });
+      }
       
-      // Add cooldown exercises
-      day.cooldown.forEach(exercise => {
-        const id = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-        exerciseIds.add(id);
-      });
+      // Add main workout exercises with defensive checks
+      if (Array.isArray(day.mainWorkout)) {
+        day.mainWorkout.forEach(exercise => {
+          if (exercise && typeof exercise.name === 'string') {
+            const id = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (id) {
+              exerciseIds.add(id);
+            }
+          }
+        });
+      }
+      
+      // Add cooldown exercises with defensive checks
+      if (Array.isArray(day.cooldown)) {
+        day.cooldown.forEach(exercise => {
+          if (exercise && typeof exercise.name === 'string') {
+            const id = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (id) {
+              exerciseIds.add(id);
+            }
+          }
+        });
+      }
     });
   });
   
@@ -42,34 +75,50 @@ export default function ExercisePage({ params }: ExercisePageProps) {
   let exerciseData = null;
   
   for (const plan of workoutPlans) {
+    if (!plan || !Array.isArray(plan.days)) {
+      continue;
+    }
+    
     for (const day of plan.days) {
+      if (!day) {
+        continue;
+      }
+      
       // Check warmup exercises
-      for (const exercise of day.warmup) {
-        const exerciseId = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-        if (exerciseId === params.id) {
-          exerciseData = exercise;
-          break;
+      if (Array.isArray(day.warmup)) {
+        for (const exercise of day.warmup) {
+          if (exercise && typeof exercise.name === 'string') {
+            const exerciseId = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (exerciseId === params.id) {
+              exerciseData = exercise;
+              break;
+            }
+          }
         }
       }
       
       // Check main workout exercises
-      if (!exerciseData) {
+      if (!exerciseData && Array.isArray(day.mainWorkout)) {
         for (const exercise of day.mainWorkout) {
-          const exerciseId = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-          if (exerciseId === params.id) {
-            exerciseData = exercise;
-            break;
+          if (exercise && typeof exercise.name === 'string') {
+            const exerciseId = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (exerciseId === params.id) {
+              exerciseData = exercise;
+              break;
+            }
           }
         }
       }
       
       // Check cooldown exercises
-      if (!exerciseData) {
+      if (!exerciseData && Array.isArray(day.cooldown)) {
         for (const exercise of day.cooldown) {
-          const exerciseId = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-          if (exerciseId === params.id) {
-            exerciseData = exercise;
-            break;
+          if (exercise && typeof exercise.name === 'string') {
+            const exerciseId = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (exerciseId === params.id) {
+              exerciseData = exercise;
+              break;
+            }
           }
         }
       }
