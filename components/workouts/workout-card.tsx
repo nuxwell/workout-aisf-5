@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Clock, Dumbbell, TrendingUp, Play } from 'lucide-react';
+import { Clock, Dumbbell, TrendingUp, Play, Camera, Eye } from 'lucide-react';
 import { format } from 'date-fns';
+import Link from 'next/link';
 
 interface WorkoutCardProps {
   workout: {
@@ -46,9 +47,15 @@ export function WorkoutCard({ workout, onStart, onView }: WorkoutCardProps) {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">{workout.name}</CardTitle>
-          <Badge variant={workout.type === 'beginner' ? 'secondary' : 'default'}>
-            {workout.type}
-          </Badge>
+          <div className="flex items-center space-x-2">
+            <Badge variant={workout.type === 'beginner' ? 'secondary' : 'default'}>
+              {workout.type}
+            </Badge>
+            <Badge variant="outline" className="flex items-center space-x-1">
+              <Camera className="h-3 w-3" />
+              <span>AI</span>
+            </Badge>
+          </div>
         </div>
         <p className="text-sm text-muted-foreground">
           {format(workout.date, 'MMM d, yyyy')}
@@ -73,7 +80,7 @@ export function WorkoutCard({ workout, onStart, onView }: WorkoutCardProps) {
         {isCompleted && (
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span>Form Score</span>
+              <span>AI Form Score</span>
               <span className="font-medium">{avgFormScore.toFixed(1)}%</span>
             </div>
             <Progress value={avgFormScore} className="h-2" />
@@ -100,10 +107,11 @@ export function WorkoutCard({ workout, onStart, onView }: WorkoutCardProps) {
           {isUpcoming ? (
             <Button onClick={() => onStart?.(workout.id)} className="flex-1">
               <Play className="h-4 w-4 mr-2" />
-              Start Workout
+              Start AI Workout
             </Button>
           ) : (
             <Button variant="outline" onClick={() => onView?.(workout.id)} className="flex-1">
+              <Eye className="h-4 w-4 mr-2" />
               View Results
             </Button>
           )}

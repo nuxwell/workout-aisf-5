@@ -45,8 +45,10 @@ import {
 import { mockWorkouts, mockFitnessTests } from '@/lib/mock-data';
 import { workoutPlans } from '@/lib/workout-data';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function WorkoutsPage() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLevel, setSelectedLevel] = useState('all');
   const [activeDay, setActiveDay] = useState(1);
@@ -108,6 +110,11 @@ export default function WorkoutsPage() {
     if (selectedExercise) {
       setCurrentImageIndex((prev) => (prev - 1 + selectedExercise.images.length) % selectedExercise.images.length);
     }
+  };
+
+  const startExercise = (exercise: any) => {
+    const exerciseId = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+    router.push(`/workouts/exercise/${exerciseId}`);
   };
 
   return (
@@ -310,7 +317,7 @@ export default function WorkoutsPage() {
               <TabsContent value="warmup" className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {currentDay.warmup.map((exercise, index) => (
-                    <Card key={index} className="hover:shadow-md transition-shadow">
+                    <Card key={index} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => startExercise(exercise)}>
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-medium">{exercise.name}</h4>
@@ -321,7 +328,8 @@ export default function WorkoutsPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setSelectedExercise(exercise);
                                 setCurrentImageIndex(0);
                               }}
@@ -339,10 +347,14 @@ export default function WorkoutsPage() {
                             <span>{exercise.focus}</span>
                           </span>
                           <span className="flex items-center space-x-1">
-                            <Zap className="h-3 w-3" />
+                            <Camera className="h-3 w-3" />
                             <span>AI Tracked</span>
                           </span>
                         </div>
+                        <Button size="sm" className="w-full mt-3">
+                          <Play className="h-3 w-3 mr-1" />
+                          Start Exercise
+                        </Button>
                       </CardContent>
                     </Card>
                   ))}
@@ -363,7 +375,7 @@ export default function WorkoutsPage() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {currentDay.mainWorkout.map((exercise, index) => (
-                    <Card key={index} className="hover:shadow-md transition-shadow">
+                    <Card key={index} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => startExercise(exercise)}>
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-medium">{exercise.name}</h4>
@@ -377,7 +389,8 @@ export default function WorkoutsPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setSelectedExercise(exercise);
                                 setCurrentImageIndex(0);
                               }}
@@ -399,6 +412,10 @@ export default function WorkoutsPage() {
                             <span>Rep Counting</span>
                           </span>
                         </div>
+                        <Button size="sm" className="w-full mt-3">
+                          <Play className="h-3 w-3 mr-1" />
+                          Start Exercise
+                        </Button>
                       </CardContent>
                     </Card>
                   ))}
@@ -408,7 +425,7 @@ export default function WorkoutsPage() {
               <TabsContent value="cooldown" className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {currentDay.cooldown.map((exercise, index) => (
-                    <Card key={index} className="hover:shadow-md transition-shadow">
+                    <Card key={index} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => startExercise(exercise)}>
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-medium">{exercise.name}</h4>
@@ -419,7 +436,8 @@ export default function WorkoutsPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setSelectedExercise(exercise);
                                 setCurrentImageIndex(0);
                               }}
@@ -441,6 +459,10 @@ export default function WorkoutsPage() {
                             <span>Pose Detection</span>
                           </span>
                         </div>
+                        <Button size="sm" className="w-full mt-3">
+                          <Play className="h-3 w-3 mr-1" />
+                          Start Exercise
+                        </Button>
                       </CardContent>
                     </Card>
                   ))}
@@ -711,7 +733,7 @@ export default function WorkoutsPage() {
               </div>
 
               <div className="flex space-x-2">
-                <Button className="flex-1">
+                <Button className="flex-1" onClick={() => startExercise(selectedExercise)}>
                   <Play className="h-4 w-4 mr-2" />
                   Start Exercise
                 </Button>
