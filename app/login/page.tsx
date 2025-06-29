@@ -41,11 +41,11 @@ export default function LoginPage() {
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-cyan-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-cyan-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="bg-blue-600 p-3 rounded-full">
+            <div className="bg-teal-600 p-3 rounded-full">
               <Pool className="h-8 w-8 text-white" />
             </div>
           </div>
@@ -104,7 +104,7 @@ export default function LoginPage() {
               {demoAccounts.map((account) => (
                 <div key={account.email} className="text-left">
                   <p className="font-medium">{account.role}:</p>
-                  <p className="text-blue-600">{account.email}</p>
+                  <p className="text-teal-600">{account.email}</p>
                 </div>
               ))}
             </div>

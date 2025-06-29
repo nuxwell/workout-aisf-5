@@ -59,42 +59,42 @@ const services = [
     title: 'Swimming Lessons',
     description: 'Professional instruction for all skill levels, from beginners to competitive swimmers.',
     features: ['Certified Instructors', 'Small Class Sizes', 'Flexible Scheduling'],
-    color: 'bg-blue-500'
+    color: 'bg-teal-500'
   },
   {
     icon: Trophy,
     title: 'Personal Training',
     description: 'One-on-one coaching with expert trainers to achieve your specific fitness goals.',
     features: ['Customized Programs', 'Progress Tracking', 'Nutrition Guidance'],
-    color: 'bg-yellow-500'
+    color: 'bg-emerald-500'
   },
   {
     icon: Users,
     title: 'Group Classes',
     description: 'Energizing group fitness sessions including water aerobics and aqua fitness.',
     features: ['Water Aerobics', 'Aqua Zumba', 'Senior Programs'],
-    color: 'bg-green-500'
+    color: 'bg-cyan-500'
   },
   {
     icon: Heart,
     title: 'Aqua Therapy',
     description: 'Therapeutic water exercises for rehabilitation and injury recovery.',
     features: ['Physical Therapy', 'Injury Recovery', 'Pain Management'],
-    color: 'bg-red-500'
+    color: 'bg-teal-600'
   },
   {
     icon: Calendar,
     title: 'Flexible Booking',
     description: 'Easy online booking system with real-time availability and instant confirmation.',
     features: ['24/7 Booking', 'Mobile App', 'Instant Confirmation'],
-    color: 'bg-purple-500'
+    color: 'bg-emerald-600'
   },
   {
     icon: Shield,
     title: 'Safety First',
     description: 'Comprehensive safety protocols and certified lifeguards on duty at all times.',
     features: ['Certified Lifeguards', 'Safety Training', 'Emergency Protocols'],
-    color: 'bg-orange-500'
+    color: 'bg-cyan-600'
   }
 ];
 
@@ -133,8 +133,8 @@ export default function HomePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-cyan-50">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600" />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-cyan-50">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-teal-600" />
       </div>
     );
   }
@@ -150,7 +150,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-2">
-              <div className="bg-blue-600 p-2 rounded-lg">
+              <div className="bg-teal-600 p-2 rounded-lg">
                 <Waves className="h-6 w-6 text-white" />
               </div>
               <span className="text-xl font-bold text-gray-900">AquaFit</span>
@@ -194,7 +194,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div className="max-w-3xl">
               <div className="mb-6">
-                <Badge className="bg-blue-600/20 text-blue-100 border-blue-400/30 mb-4">
+                <Badge className="bg-teal-600/20 text-teal-100 border-teal-400/30 mb-4">
                   {heroSlides[currentSlide].subtitle}
                 </Badge>
               </div>
@@ -205,7 +205,7 @@ export default function HomePage() {
                 {heroSlides[currentSlide].description}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button asChild size="lg" className="bg-teal-600 hover:bg-teal-700 text-white">
                   <Link href={heroSlides[currentSlide].ctaLink}>
                     {heroSlides[currentSlide].cta}
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -256,7 +256,7 @@ export default function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-4xl md:text-5xl font-bold text-blue-600 mb-2">
+                <div className="text-4xl md:text-5xl font-bold text-teal-600 mb-2">
                   {stat.number}
                 </div>
                 <div className="text-gray-600 font-medium">{stat.label}</div>
@@ -270,10 +270,10 @@ export default function HomePage() {
       <section id="services" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <Badge className="bg-blue-100 text-blue-800 mb-4">Our Services</Badge>
+            <Badge className="bg-teal-100 text-teal-800 mb-4">Our Services</Badge>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Everything You Need for
-              <span className="text-blue-600"> Aquatic Fitness</span>
+              <span className="text-teal-600"> Aquatic Fitness</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               From beginner swimming lessons to advanced training programs, we offer comprehensive 
@@ -288,23 +288,24 @@ export default function HomePage() {
                   <div className={`w-12 h-12 ${service.color} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
                     <service.icon className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                  <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-teal-600 transition-colors">
                     {service.title}
                   </CardTitle>
                   <CardDescription className="text-gray-600 leading-relaxed">
                     {service.description}
                   </CardDescription>
                 </CardHeader>
+                
                 <CardContent>
                   <ul className="space-y-2">
                     {service.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-center space-x-2 text-sm text-gray-600">
-                        <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        <CheckCircle className="h-4 w-4 text-emerald-500 flex-shrink-0" />
                         <span>{feature}</span>
                       </li>
                     ))}
                   </ul>
-                  <Button className="w-full mt-6 group-hover:bg-blue-600 transition-colors" variant="outline">
+                  <Button className="w-full mt-6 group-hover:bg-teal-600 transition-colors" variant="outline">
                     Learn More
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
@@ -316,21 +317,21 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-50 to-cyan-50">
+      <section className="py-20 bg-gradient-to-br from-teal-50 to-cyan-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <Badge className="bg-blue-100 text-blue-800 mb-4">Why Choose AquaFit</Badge>
+              <Badge className="bg-teal-100 text-teal-800 mb-4">Why Choose AquaFit</Badge>
               <h2 className="text-4xl font-bold text-gray-900 mb-6">
                 The Future of
-                <span className="text-blue-600"> Aquatic Fitness</span>
+                <span className="text-teal-600"> Aquatic Fitness</span>
               </h2>
               <p className="text-lg text-gray-600 mb-8">
                 Experience cutting-edge technology combined with world-class facilities and expert instruction.
               </p>
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
-                  <div className="bg-blue-600 rounded-lg p-2 flex-shrink-0">
+                  <div className="bg-teal-600 rounded-lg p-2 flex-shrink-0">
                     <Star className="h-5 w-5 text-white" />
                   </div>
                   <div>
@@ -339,7 +340,7 @@ export default function HomePage() {
                   </div>
                 </div>
                 <div className="flex items-start space-x-4">
-                  <div className="bg-blue-600 rounded-lg p-2 flex-shrink-0">
+                  <div className="bg-teal-600 rounded-lg p-2 flex-shrink-0">
                     <Clock className="h-5 w-5 text-white" />
                   </div>
                   <div>
@@ -348,7 +349,7 @@ export default function HomePage() {
                   </div>
                 </div>
                 <div className="flex items-start space-x-4">
-                  <div className="bg-blue-600 rounded-lg p-2 flex-shrink-0">
+                  <div className="bg-teal-600 rounded-lg p-2 flex-shrink-0">
                     <Users className="h-5 w-5 text-white" />
                   </div>
                   <div>
@@ -368,8 +369,8 @@ export default function HomePage() {
               </div>
               <div className="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-lg p-6 max-w-xs">
                 <div className="flex items-center space-x-3">
-                  <div className="bg-green-100 rounded-full p-2">
-                    <CheckCircle className="h-6 w-6 text-green-600" />
+                  <div className="bg-emerald-100 rounded-full p-2">
+                    <CheckCircle className="h-6 w-6 text-emerald-600" />
                   </div>
                   <div>
                     <p className="font-semibold text-gray-900">98% Success Rate</p>
@@ -383,16 +384,16 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-blue-600">
+      <section className="py-20 bg-teal-600">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Ready to Dive In?
           </h2>
-          <p className="text-xl text-blue-100 mb-8">
+          <p className="text-xl text-teal-100 mb-8">
             Join thousands of members who have transformed their fitness journey with AquaFit.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+            <Button asChild size="lg" className="bg-white text-teal-600 hover:bg-gray-100">
               <Link href="/login">
                 Start Your Journey
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -411,7 +412,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="bg-blue-600 p-2 rounded-lg">
+                <div className="bg-teal-600 p-2 rounded-lg">
                   <Waves className="h-6 w-6 text-white" />
                 </div>
                 <span className="text-xl font-bold">AquaFit</span>

@@ -139,24 +139,24 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Current Workout Plan */}
           {standingWorkoutPlan && (
-            <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950">
+            <Card className="border-2 border-teal-200 bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-950 dark:to-cyan-950">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="bg-blue-600 p-2 rounded-lg">
+                    <div className="bg-teal-600 p-2 rounded-lg">
                       <Dumbbell className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <CardTitle className="text-xl text-blue-900 dark:text-blue-100">
+                      <CardTitle className="text-xl text-teal-900 dark:text-teal-100">
                         {standingWorkoutPlan.name}
                       </CardTitle>
-                      <CardDescription className="text-blue-700 dark:text-blue-300">
+                      <CardDescription className="text-teal-700 dark:text-teal-300">
                         Week {workoutProgress.currentWeek} of {workoutProgress.totalWeeks} • Age 40+ Optimized
                       </CardDescription>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Badge className="bg-blue-600 text-white">
+                    <Badge className="bg-teal-600 text-white">
                       <Camera className="h-3 w-3 mr-1" />
                       AI Tracking
                     </Badge>
@@ -230,15 +230,15 @@ export default function DashboardPage() {
                 {/* Overall Progress */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                    <span className="text-sm font-medium text-teal-900 dark:text-teal-100">
                       Overall Progress
                     </span>
-                    <span className="text-sm text-blue-700 dark:text-blue-300">
+                    <span className="text-sm text-teal-700 dark:text-teal-300">
                       {workoutProgress.completedDays}/{workoutProgress.totalDays} days
                     </span>
                   </div>
                   <Progress value={completionPercentage} className="h-3" />
-                  <div className="flex items-center justify-between text-xs text-blue-600 dark:text-blue-400">
+                  <div className="flex items-center justify-between text-xs text-teal-600 dark:text-teal-400">
                     <span>{completionPercentage.toFixed(0)}% Complete</span>
                     <span>{workoutProgress.totalDays - workoutProgress.completedDays} days remaining</span>
                   </div>
@@ -246,16 +246,16 @@ export default function DashboardPage() {
 
                 {/* This Week's Schedule */}
                 <div className="space-y-3">
-                  <h4 className="font-medium text-blue-900 dark:text-blue-100">This Week's Schedule</h4>
+                  <h4 className="font-medium text-teal-900 dark:text-teal-100">This Week's Schedule</h4>
                   <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
                     {workoutProgress.weeklyProgress.map((day) => (
                       <div
                         key={day.day}
                         className={`p-3 rounded-lg text-center transition-all ${
                           day.isToday
-                            ? 'bg-blue-600 text-white ring-2 ring-blue-300'
+                            ? 'bg-teal-600 text-white ring-2 ring-teal-300'
                             : day.completed
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'
+                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100'
                             : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
                         }`}
                       >
@@ -275,22 +275,22 @@ export default function DashboardPage() {
                 {/* Quick Stats */}
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg">
-                    <div className="text-lg font-bold text-blue-600">{workoutProgress.streakDays}</div>
+                    <div className="text-lg font-bold text-teal-600">{workoutProgress.streakDays}</div>
                     <div className="text-xs text-muted-foreground">Day Streak</div>
                   </div>
                   <div className="text-center p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg">
-                    <div className="text-lg font-bold text-green-600">{workoutProgress.avgFormScore}%</div>
+                    <div className="text-lg font-bold text-emerald-600">{workoutProgress.avgFormScore}%</div>
                     <div className="text-xs text-muted-foreground">Avg Form</div>
                   </div>
                   <div className="text-center p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg">
-                    <div className="text-lg font-bold text-purple-600">30</div>
+                    <div className="text-lg font-bold text-cyan-600">30</div>
                     <div className="text-xs text-muted-foreground">Min/Day</div>
                   </div>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="flex space-x-3">
-                  <Button className="flex-1 bg-blue-600 hover:bg-blue-700">
+                  <Button className="flex-1 bg-teal-600 hover:bg-teal-700">
                     <Play className="h-4 w-4 mr-2" />
                     Start Today's Workout
                   </Button>
@@ -390,12 +390,12 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-950 rounded-lg">
                   <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <CheckCircle className="h-4 w-4 text-emerald-600" />
                     <span className="text-sm font-medium">Squats</span>
                   </div>
-                  <Badge variant="outline" className="text-green-600 border-green-600">
+                  <Badge variant="outline" className="text-emerald-600 border-emerald-600">
                     92%
                   </Badge>
                 </div>
@@ -408,12 +408,12 @@ export default function DashboardPage() {
                     78%
                   </Badge>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-teal-50 dark:bg-teal-950 rounded-lg">
                   <div className="flex items-center space-x-2">
-                    <Zap className="h-4 w-4 text-blue-600" />
+                    <Zap className="h-4 w-4 text-teal-600" />
                     <span className="text-sm font-medium">Planks</span>
                   </div>
-                  <Badge variant="outline" className="text-blue-600 border-blue-600">
+                  <Badge variant="outline" className="text-teal-600 border-teal-600">
                     85%
                   </Badge>
                 </div>
