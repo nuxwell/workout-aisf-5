@@ -16,41 +16,6 @@ interface ExerciseResults {
   feedback: string[];
 }
 
-// Generate static params for all exercises
-export async function generateStaticParams() {
-  const params: { id: string }[] = [];
-  
-  for (const plan of workoutPlans) {
-    for (const day of plan.days) {
-      // Add warmup exercises
-      day.warmup.forEach((exercise: any) => {
-        const id = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-        if (!params.find(p => p.id === id)) {
-          params.push({ id });
-        }
-      });
-
-      // Add main workout exercises
-      day.mainWorkout.forEach((exercise: any) => {
-        const id = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-        if (!params.find(p => p.id === id)) {
-          params.push({ id });
-        }
-      });
-
-      // Add cooldown exercises
-      day.cooldown.forEach((exercise: any) => {
-        const id = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-        if (!params.find(p => p.id === id)) {
-          params.push({ id });
-        }
-      });
-    }
-  }
-  
-  return params;
-}
-
 export default function ExercisePage() {
   const params = useParams();
   const router = useRouter();
