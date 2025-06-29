@@ -9,15 +9,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Clock, Target, Zap, Play, Pause, RotateCcw } from 'lucide-react';
 
 interface Exercise {
-  id: string;
   name: string;
   description: string;
-  duration: number;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
-  category: string;
-  instructions: string[];
-  tips: string[];
-  muscles: string[];
+  duration?: string;
+  reps?: string;
+  focus: string;
+  trackingQuality: string;
+  images: string[];
 }
 
 interface ExercisePageClientProps {
@@ -25,8 +23,31 @@ interface ExercisePageClientProps {
 }
 
 export function ExercisePageClient({ exercise }: ExercisePageClientProps) {
+  // Helper function to parse duration string to seconds
+  const parseDurationToSeconds = (duration?: string): number => {
+    if (!duration) return 60; // Default to 60 seconds
+    
+    const lowerDuration = duration.toLowerCase();
+    
+    // Extract numbers from the duration string
+    const numbers = lowerDuration.match(/\d+/g);
+    if (!numbers || numbers.length === 0) return 60;
+    
+    const value = parseInt(numbers[0]);
+    
+    if (lowerDuration.includes('minute')) {
+      return value * 60;
+    } else if (lowerDuration.includes('second')) {
+      return value;
+    } else {
+      // Default to seconds if no unit specified
+      return value;
+    }
+  };
+
+  const durationInSeconds = parseDurationToSeconds(exercise.duration);
   const [isActive, setIsActive] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(exercise.duration);
+  const [timeLeft, setTimeLeft] = useState(durationInSeconds);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -36,7 +57,7 @@ export function ExercisePageClient({ exercise }: ExercisePageClientProps) {
       interval = setInterval(() => {
         setTimeLeft((prev) => {
           const newTime = prev - 1;
-          setProgress(((exercise.duration - newTime) / exercise.duration) * 100);
+          setProgress(((durationInSeconds - newTime) / durationInSeconds) * 100);
           return newTime;
         });
       }, 1000);
@@ -45,13 +66,13 @@ export function ExercisePageClient({ exercise }: ExercisePageClientProps) {
     }
 
     return () => clearInterval(interval);
-  }, [isActive, timeLeft, exercise.duration]);
+  }, [isActive, timeLeft, durationInSeconds]);
 
   const handleStart = () => setIsActive(true);
   const handlePause = () => setIsActive(false);
   const handleReset = () => {
     setIsActive(false);
-    setTimeLeft(exercise.duration);
+    setTimeLeft(durationInSeconds);
     setProgress(0);
   };
 
@@ -62,11 +83,18 @@ export function ExercisePageClient({ exercise }: ExercisePageClientProps) {
   };
 
   const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'Beginner': return 'bg-green-100 text-green-800';
-      case 'Intermediate': return 'bg-yellow-100 text-yellow-800';
-      case 'Advanced': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+    switch (difficulty.toLowerCase()) {
+      case 'beginner':
+      case 'low': 
+        return 'bg-green-100 text-green-800';
+      case 'intermediate':
+      case 'medium': 
+        return 'bg-yellow-100 text-yellow-800';
+      case 'advanced':
+      case 'high': 
+        return 'bg-red-100 text-red-800';
+      default: 
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -75,8 +103,8 @@ export function ExercisePageClient({ exercise }: ExercisePageClientProps) {
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-4">
           <h1 className="text-3xl font-bold text-gray-900">{exercise.name}</h1>
-          <Badge className={getDifficultyColor(exercise.difficulty)}>
-            {exercise.difficulty}
+          <Badge className={getDifficultyColor(exercise.trackingQuality)}>
+            {exercise.trackingQuality}
           </Badge>
         </div>
         <p className="text-gray-600 text-lg">{exercise.description}</p>
@@ -120,13 +148,13 @@ export function ExercisePageClient({ exercise }: ExercisePageClientProps) {
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="text-center p-3 bg-gray-50 rounded-lg">
                   <Target className="h-4 w-4 mx-auto mb-1 text-gray-600" />
-                  <div className="font-semibold">{exercise.duration}s</div>
+                  <div className="font-semibold">{exercise.duration || `${durationInSeconds}s`}</div>
                   <div className="text-gray-600">Duration</div>
                 </div>
                 <div className="text-center p-3 bg-gray-50 rounded-lg">
                   <Zap className="h-4 w-4 mx-auto mb-1 text-gray-600" />
-                  <div className="font-semibold">{exercise.category}</div>
-                  <div className="text-gray-600">Category</div>
+                  <div className="font-semibold">{exercise.focus}</div>
+                  <div className="text-gray-600">Focus</div>
                 </div>
               </div>
             </CardContent>
@@ -139,7 +167,7 @@ export function ExercisePageClient({ exercise }: ExercisePageClientProps) {
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="instructions">Instructions</TabsTrigger>
               <TabsTrigger value="tips">Tips</TabsTrigger>
-              <TabsTrigger value="muscles">Muscles</TabsTrigger>
+              <TabsTrigger value="muscles">Details</TabsTrigger>
             </TabsList>
             
             <TabsContent value="instructions" className="mt-6">
@@ -147,20 +175,22 @@ export function ExercisePageClient({ exercise }: ExercisePageClientProps) {
                 <CardHeader>
                   <CardTitle>How to Perform</CardTitle>
                   <CardDescription>
-                    Follow these step-by-step instructions for proper form
+                    Exercise description and instructions
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ol className="space-y-3">
-                    {exercise.instructions.map((instruction, index) => (
-                      <li key={index} className="flex gap-3">
-                        <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-sm font-semibold">
-                          {index + 1}
-                        </span>
-                        <span className="text-gray-700">{instruction}</span>
-                      </li>
-                    ))}
-                  </ol>
+                  <div className="flex gap-3">
+                    <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-sm font-semibold">
+                      1
+                    </span>
+                    <span className="text-gray-700">{exercise.description}</span>
+                  </div>
+                  {exercise.reps && (
+                    <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                      <div className="font-semibold text-blue-800">Repetitions:</div>
+                      <div className="text-blue-700">{exercise.reps}</div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -168,20 +198,16 @@ export function ExercisePageClient({ exercise }: ExercisePageClientProps) {
             <TabsContent value="tips" className="mt-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Pro Tips</CardTitle>
+                  <CardTitle>Exercise Tips</CardTitle>
                   <CardDescription>
-                    Expert advice to maximize your workout effectiveness
+                    General guidance for this exercise
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-3">
-                    {exercise.tips.map((tip, index) => (
-                      <li key={index} className="flex gap-3">
-                        <span className="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2"></span>
-                        <span className="text-gray-700">{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="text-gray-600">
+                    <p>Focus on proper form and controlled movements. Listen to your body and adjust intensity as needed.</p>
+                    <p className="mt-2">Maintain steady breathing throughout the exercise.</p>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -189,18 +215,37 @@ export function ExercisePageClient({ exercise }: ExercisePageClientProps) {
             <TabsContent value="muscles" className="mt-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Target Muscles</CardTitle>
+                  <CardTitle>Exercise Details</CardTitle>
                   <CardDescription>
-                    Primary and secondary muscle groups worked
+                    Additional information about this exercise
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {exercise.muscles.map((muscle, index) => (
-                      <Badge key={index} variant="secondary" className="text-sm">
-                        {muscle}
+                  <div className="space-y-4">
+                    <div>
+                      <div className="font-semibold text-gray-800 mb-1">Focus Area:</div>
+                      <Badge variant="secondary" className="text-sm">
+                        {exercise.focus}
                       </Badge>
-                    ))}
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-800 mb-1">Tracking Quality:</div>
+                      <Badge variant="secondary" className="text-sm">
+                        {exercise.trackingQuality}
+                      </Badge>
+                    </div>
+                    {exercise.duration && (
+                      <div>
+                        <div className="font-semibold text-gray-800 mb-1">Duration:</div>
+                        <div className="text-gray-600">{exercise.duration}</div>
+                      </div>
+                    )}
+                    {exercise.reps && (
+                      <div>
+                        <div className="font-semibold text-gray-800 mb-1">Repetitions:</div>
+                        <div className="text-gray-600">{exercise.reps}</div>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>

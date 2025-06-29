@@ -70,7 +70,10 @@ interface ExercisePageProps {
   };
 }
 
-export default function ExercisePage({ params }: ExercisePageProps) {
+export default async function ExercisePage({ params }: ExercisePageProps) {
+  // Await params to fix Next.js warning
+  const { id } = await params;
+  
   // Find the exercise data on the server
   let exerciseData = null;
   
@@ -89,7 +92,7 @@ export default function ExercisePage({ params }: ExercisePageProps) {
         for (const exercise of day.warmup) {
           if (exercise && typeof exercise.name === 'string') {
             const exerciseId = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-            if (exerciseId === params.id) {
+            if (exerciseId === id) {
               exerciseData = exercise;
               break;
             }
@@ -102,7 +105,7 @@ export default function ExercisePage({ params }: ExercisePageProps) {
         for (const exercise of day.mainWorkout) {
           if (exercise && typeof exercise.name === 'string') {
             const exerciseId = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-            if (exerciseId === params.id) {
+            if (exerciseId === id) {
               exerciseData = exercise;
               break;
             }
@@ -115,7 +118,7 @@ export default function ExercisePage({ params }: ExercisePageProps) {
         for (const exercise of day.cooldown) {
           if (exercise && typeof exercise.name === 'string') {
             const exerciseId = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-            if (exerciseId === params.id) {
+            if (exerciseId === id) {
               exerciseData = exercise;
               break;
             }
