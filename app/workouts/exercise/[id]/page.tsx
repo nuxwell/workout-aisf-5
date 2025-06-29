@@ -16,6 +16,39 @@ interface ExerciseResults {
   feedback: string[];
 }
 
+export async function generateStaticParams() {
+  const params: { id: string }[] = [];
+  
+  for (const plan of workoutPlans) {
+    for (const day of plan.days) {
+      // Add warmup exercises
+      day.warmup.forEach((exercise: any) => {
+        const id = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+        params.push({ id });
+      });
+
+      // Add main workout exercises
+      day.mainWorkout.forEach((exercise: any) => {
+        const id = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+        params.push({ id });
+      });
+
+      // Add cooldown exercises
+      day.cooldown.forEach((exercise: any) => {
+        const id = exercise.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+        params.push({ id });
+      });
+    }
+  }
+
+  // Remove duplicates
+  const uniqueParams = params.filter((param, index, self) => 
+    index === self.findIndex(p => p.id === param.id)
+  );
+
+  return uniqueParams;
+}
+
 export default function ExercisePage() {
   const params = useParams();
   const router = useRouter();
