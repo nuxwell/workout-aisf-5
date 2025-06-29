@@ -1,36 +1,23 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  ArrowLeft,
-  Play,
-  Pause,
-  RotateCcw,
-  Camera,
-  Target,
-  Clock,
-  Zap,
-  CheckCircle,
-  ChevronLeft,
-  ChevronRight,
-  Timer,
-  Heart,
-  Activity
-} from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Clock, Target, Zap, Play, Pause, RotateCcw } from 'lucide-react';
 
 interface Exercise {
+  id: string;
   name: string;
   description: string;
-  focus: string;
-  trackingQuality: string;
-  reps?: string;
-  duration?: string;
-  images: string[];
+  duration: number;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  category: string;
+  instructions: string[];
+  tips: string[];
+  muscles: string[];
 }
 
 interface ExercisePageClientProps {
@@ -38,354 +25,187 @@ interface ExercisePageClientProps {
 }
 
 export function ExercisePageClient({ exercise }: ExercisePageClientProps) {
-  const router = useRouter();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isWorkoutActive, setIsWorkoutActive] = useState(false);
-  const [currentRep, setCurrentRep] = useState(0);
-  const [workoutTimer, setWorkoutTimer] = useState(0);
-  const [formScore, setFormScore] = useState(0);
+  const [isActive, setIsActive] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(exercise.duration);
+  const [progress, setProgress] = useState(0);
 
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % exercise.images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + exercise.images.length) % exercise.images.length);
-  };
-
-  const startWorkout = () => {
-    setIsWorkoutActive(true);
-    setCurrentRep(0);
-    setWorkoutTimer(0);
-    setFormScore(0);
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
     
-    // Simulate AI tracking
-    const interval = setInterval(() => {
-      setWorkoutTimer(prev => prev + 1);
-      
-      // Simulate rep counting and form scoring
-      if (Math.random() > 0.7) {
-        setCurrentRep(prev => prev + 1);
-        setFormScore(prev => Math.min(100, prev + Math.random() * 10));
-      }
-    }, 1000);
+    if (isActive && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((prev) => {
+          const newTime = prev - 1;
+          setProgress(((exercise.duration - newTime) / exercise.duration) * 100);
+          return newTime;
+        });
+      }, 1000);
+    } else if (timeLeft === 0) {
+      setIsActive(false);
+    }
 
-    // Auto-stop after target reps or duration
-    setTimeout(() => {
-      clearInterval(interval);
-      setIsWorkoutActive(false);
-    }, 30000); // 30 seconds demo
+    return () => clearInterval(interval);
+  }, [isActive, timeLeft, exercise.duration]);
+
+  const handleStart = () => setIsActive(true);
+  const handlePause = () => setIsActive(false);
+  const handleReset = () => {
+    setIsActive(false);
+    setTimeLeft(exercise.duration);
+    setProgress(0);
   };
 
-  const stopWorkout = () => {
-    setIsWorkoutActive(false);
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const resetWorkout = () => {
-    setIsWorkoutActive(false);
-    setCurrentRep(0);
-    setWorkoutTimer(0);
-    setFormScore(0);
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'Beginner': return 'bg-green-100 text-green-800';
+      case 'Intermediate': return 'bg-yellow-100 text-yellow-800';
+      case 'Advanced': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button variant="outline" size="sm" onClick={() => router.back()}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold">{exercise.name}</h1>
-              <p className="text-muted-foreground mt-1">
-                AI-Powered Exercise with MediaPipe Tracking
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Badge variant={exercise.trackingQuality === 'Excellent' ? 'default' : 'secondary'}>
-              <Camera className="h-3 w-3 mr-1" />
-              {exercise.trackingQuality} Tracking
-            </Badge>
-            <Badge variant="outline">
-              <Target className="h-3 w-3 mr-1" />
-              {exercise.focus}
-            </Badge>
-          </div>
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="mb-8">
+        <div className="flex items-center gap-4 mb-4">
+          <h1 className="text-3xl font-bold text-gray-900">{exercise.name}</h1>
+          <Badge className={getDifficultyColor(exercise.difficulty)}>
+            {exercise.difficulty}
+          </Badge>
+        </div>
+        <p className="text-gray-600 text-lg">{exercise.description}</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Timer Section */}
+        <div className="lg:col-span-1">
+          <Card className="sticky top-4">
+            <CardHeader className="text-center">
+              <CardTitle className="flex items-center justify-center gap-2">
+                <Clock className="h-5 w-5" />
+                Exercise Timer
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="text-center">
+                <div className="text-4xl font-mono font-bold text-blue-600 mb-2">
+                  {formatTime(timeLeft)}
+                </div>
+                <Progress value={progress} className="w-full" />
+              </div>
+              
+              <div className="flex gap-2 justify-center">
+                {!isActive ? (
+                  <Button onClick={handleStart} className="flex-1">
+                    <Play className="h-4 w-4 mr-2" />
+                    Start
+                  </Button>
+                ) : (
+                  <Button onClick={handlePause} variant="outline" className="flex-1">
+                    <Pause className="h-4 w-4 mr-2" />
+                    Pause
+                  </Button>
+                )}
+                <Button onClick={handleReset} variant="outline">
+                  <RotateCcw className="h-4 w-4" />
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <Target className="h-4 w-4 mx-auto mb-1 text-gray-600" />
+                  <div className="font-semibold">{exercise.duration}s</div>
+                  <div className="text-gray-600">Duration</div>
+                </div>
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <Zap className="h-4 w-4 mx-auto mb-1 text-gray-600" />
+                  <div className="font-semibold">{exercise.category}</div>
+                  <div className="text-gray-600">Category</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Exercise Demonstration */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Image Carousel */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Camera className="h-5 w-5" />
-                  <span>Exercise Demonstration</span>
-                </CardTitle>
-                <CardDescription>
-                  Step-by-step visual guide for proper form
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="relative">
-                  <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                    <img
-                      src={exercise.images[currentImageIndex]}
-                      alt={`${exercise.name} step ${currentImageIndex + 1}`}
-                      className="w-full h-full object-cover"
-                    />
+        {/* Content Section */}
+        <div className="lg:col-span-2">
+          <Tabs defaultValue="instructions" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="instructions">Instructions</TabsTrigger>
+              <TabsTrigger value="tips">Tips</TabsTrigger>
+              <TabsTrigger value="muscles">Muscles</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="instructions" className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>How to Perform</CardTitle>
+                  <CardDescription>
+                    Follow these step-by-step instructions for proper form
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ol className="space-y-3">
+                    {exercise.instructions.map((instruction, index) => (
+                      <li key={index} className="flex gap-3">
+                        <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-sm font-semibold">
+                          {index + 1}
+                        </span>
+                        <span className="text-gray-700">{instruction}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="tips" className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Pro Tips</CardTitle>
+                  <CardDescription>
+                    Expert advice to maximize your workout effectiveness
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3">
+                    {exercise.tips.map((tip, index) => (
+                      <li key={index} className="flex gap-3">
+                        <span className="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2"></span>
+                        <span className="text-gray-700">{tip}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="muscles" className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Target Muscles</CardTitle>
+                  <CardDescription>
+                    Primary and secondary muscle groups worked
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {exercise.muscles.map((muscle, index) => (
+                      <Badge key={index} variant="secondary" className="text-sm">
+                        {muscle}
+                      </Badge>
+                    ))}
                   </div>
-                  
-                  {/* Navigation Arrows */}
-                  <button
-                    onClick={prevImage}
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-all"
-                  >
-                    <ChevronLeft className="h-6 w-6" />
-                  </button>
-                  <button
-                    onClick={nextImage}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-all"
-                  >
-                    <ChevronRight className="h-6 w-6" />
-                  </button>
-
-                  {/* Image Counter */}
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
-                    {currentImageIndex + 1} / {exercise.images.length}
-                  </div>
-                </div>
-
-                {/* Thumbnails */}
-                <div className="grid grid-cols-4 gap-2 mt-4">
-                  {exercise.images.map((image, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentImageIndex(index)}
-                      className={`aspect-video rounded-lg overflow-hidden border-2 transition-all ${
-                        currentImageIndex === index 
-                          ? 'border-blue-500 ring-2 ring-blue-200' 
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <img
-                        src={image}
-                        alt={`${exercise.name} step ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* AI Tracking Interface */}
-            <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2 text-blue-900 dark:text-blue-100">
-                  <Zap className="h-5 w-5" />
-                  <span>AI Form Tracking</span>
-                </CardTitle>
-                <CardDescription className="text-blue-700 dark:text-blue-300">
-                  Real-time MediaPipe analysis of your exercise form
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Workout Stats */}
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">
-                      {exercise.reps ? currentRep : Math.floor(workoutTimer / 60)}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {exercise.reps ? 'Reps' : 'Minutes'}
-                    </div>
-                  </div>
-                  <div className="text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">{formScore.toFixed(0)}%</div>
-                    <div className="text-sm text-muted-foreground">Form Score</div>
-                  </div>
-                  <div className="text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg">
-                    <div className="text-2xl font-bold text-purple-600">{workoutTimer}s</div>
-                    <div className="text-sm text-muted-foreground">Duration</div>
-                  </div>
-                </div>
-
-                {/* Form Score Progress */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Real-time Form Analysis</span>
-                    <span className="text-sm text-muted-foreground">{formScore.toFixed(1)}%</span>
-                  </div>
-                  <Progress value={formScore} className="h-3" />
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>Poor</span>
-                    <span>Excellent</span>
-                  </div>
-                </div>
-
-                {/* Control Buttons */}
-                <div className="flex space-x-3">
-                  {!isWorkoutActive ? (
-                    <Button onClick={startWorkout} className="flex-1 bg-blue-600 hover:bg-blue-700">
-                      <Play className="h-4 w-4 mr-2" />
-                      Start AI Tracking
-                    </Button>
-                  ) : (
-                    <Button onClick={stopWorkout} className="flex-1 bg-red-600 hover:bg-red-700">
-                      <Pause className="h-4 w-4 mr-2" />
-                      Stop Tracking
-                    </Button>
-                  )}
-                  <Button variant="outline" onClick={resetWorkout}>
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    Reset
-                  </Button>
-                </div>
-
-                {/* AI Feedback */}
-                {isWorkoutActive && (
-                  <div className="p-4 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Activity className="h-4 w-4 text-blue-600" />
-                      <span className="font-medium text-blue-900 dark:text-blue-100">
-                        Live Feedback
-                      </span>
-                    </div>
-                    <p className="text-sm text-blue-700 dark:text-blue-300">
-                      {formScore > 80 
-                        ? "Excellent form! Keep it up!" 
-                        : formScore > 60 
-                        ? "Good form, try to maintain proper posture."
-                        : "Focus on your form - slow down if needed."}
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Exercise Details Sidebar */}
-          <div className="space-y-6">
-            {/* Exercise Info */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Exercise Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Focus Area:</span>
-                    <span className="font-medium">{exercise.focus}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Tracking Quality:</span>
-                    <Badge variant={exercise.trackingQuality === 'Excellent' ? 'default' : 'secondary'}>
-                      {exercise.trackingQuality}
-                    </Badge>
-                  </div>
-                  {exercise.reps && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Target Reps:</span>
-                      <span className="font-medium">{exercise.reps}</span>
-                    </div>
-                  )}
-                  {exercise.duration && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Duration:</span>
-                      <span className="font-medium">{exercise.duration}</span>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Instructions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Instructions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {exercise.description}
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* AI Features */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Zap className="h-5 w-5" />
-                  <span>AI Features</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-lg">
-                    <Camera className="h-4 w-4 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Pose Detection</p>
-                    <p className="text-xs text-muted-foreground">Real-time form analysis</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="bg-green-100 dark:bg-green-900 p-2 rounded-lg">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Rep Counting</p>
-                    <p className="text-xs text-muted-foreground">Automatic repetition tracking</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="bg-purple-100 dark:bg-purple-900 p-2 rounded-lg">
-                    <Heart className="h-4 w-4 text-purple-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Form Scoring</p>
-                    <p className="text-xs text-muted-foreground">Quality assessment</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="bg-orange-100 dark:bg-orange-900 p-2 rounded-lg">
-                    <Timer className="h-4 w-4 text-orange-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Progress Tracking</p>
-                    <p className="text-xs text-muted-foreground">Performance analytics</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button variant="outline" className="w-full justify-start">
-                  <Clock className="h-4 w-4 mr-2" />
-                  Set Timer
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Target className="h-4 w-4 mr-2" />
-                  Set Rep Goal
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Activity className="h-4 w-4 mr-2" />
-                  View History
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
